@@ -8,14 +8,29 @@ from tensorflow.keras.preprocessing.image import img_to_array, array_to_img
 from tensorflow.keras.applications import vgg16
 
 from models import ImageTransformNetwork
-from losses import feature_loss, style_loss, tv_loss
+from losses import TheLoser
 import argparse
 
-BASE_IMG_PATH = ''
-STYLE_IMG_PATH = ''
-OUTPUT_PREFIX = ''
+####################
+# Argument Parsing
+####################
 
-MODEL_SAVE_PREFIX = ''
+parser = argparse.ArgumentParser()
+parser.add_argument('model_checkpoint_prefix', type=str, default='./checkpoints/model',
+                    help='Prefix for saving the model checkpoints')
+parser.add_argument('--iter', type=int, default=40000, required=False,
+                    help='Number of iterations to run.')
+parser.add_argument('--content_weight', type=float, default=0.025, required=False,
+                    help='Content weight.')
+parser.add_argument('--style_weight', type=float, default=1.0, required=False,
+                    help='Style weight.')
+parser.add_argument('--tv_weight', type=float, default=1.0, required=False,
+                    help='Total Variation weight.')
+parser.add_argument('--pixel_weight', type=float, default=0.0, required=False,
+                    help='Pixel loss weight')
+
+args_in = parser.parse_args()
+MODEL_SAVE_PREFIX = args_in.model_checkpoint_prefix
 
 ######################
 # Image Utilities
@@ -52,6 +67,21 @@ def deprocess_img(img_tensor: tf.Tensor) -> np.ndarray:
     img_arr = np.clip(img_arr, 0, 255).astype('uint8')
     return img_arr
 
+#############################################################################
+
+STYLE_WT = args_in.style_weight
+FEATURE_RECONS_WT = args_in.content_weight
+TV_WT = args_in.tv_weight
+PIXEL_WT = args_in.pixel_weight
 
 image_transform_net = ImageTransformNetwork()
 image_transform_model = image_transform_net.model
+
+# We'll be training on the MS-COCO dataset
+
+#base_img = preprocess_img(BASE_IMG_PATH)
+#style_img = preprocess_img(STYLE_IMG_PATH)
+
+#loss_measures = TheLoser(imshape=(IMG_H, IMG_W), STYLE_WT, FEATURE_RECONS_WT, TV_WT, PIXEL_WT)
+#image_transform_net.compile_model(loss_measures)
+#image_transform_net.train_model(base_img, style_img, loss_measures, MODEL_SAVE_PREFIX)

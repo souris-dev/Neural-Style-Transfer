@@ -16,7 +16,7 @@ class TheLoser:
     So that one single Loser object can be created for a given image size
     """
 
-    def __init__(self, imshape: tuple, style_wt: float, feature_recons_wt: float, tv_wt: float):
+    def __init__(self, imshape: tuple, style_wt: float, feature_recons_wt: float, tv_wt: float, pixel_wt=0.0):
         self.img_h = imshape[0]
         self.img_w = imshape[1]
 
@@ -24,6 +24,7 @@ class TheLoser:
         self.style_wt = style_wt  # style loss wt.
         self.feature_recons_wt = feature_recons_wt  # feature reconstruction loss wt.
         self.tv_wt = tv_wt  # total variation loss wt.
+        self.pixel_wt = pixel_wt  # pixel loss weight
 
         # Here are the models and layers we'll use
         # for our perceptual loss(es)
@@ -110,7 +111,7 @@ class TheLoser:
         return tf.reduce_sum(tf.pow(a + b, 1.25))
 
 
-    def _pixel_loss(y_pred, y_true, shape: tuple) -> float:
+    def _pixel_loss(y_pred, y_true) -> float:
         """
         Calculates simple pixel-wise loss.
         """
@@ -151,13 +152,14 @@ class TheLoser:
             n_sty_layers = len(self.style_layers)
             loss += style_weight * (style_loss / n_sty_layers)
 
-        # Finally add the total variation loss into the mix:
+        # Finally add the total variation loss and the pixel loss into the mix:
         loss += self.tv_wt * _tv_loss(combo)
+        loss += self.pixel_wt * _pixel_loss(combo, base)
 
         return loss
 
 
-    def get_loss_function(self, base, styleref):
+    def get_loss_function(self, base: tf.Tensor, styleref: tf.Tensor) -> function:
         """
         Returns a (partial) function that accepts 2 arguments,
         as keras expects a loss function that takes 2 arguments while training.

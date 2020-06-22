@@ -9,9 +9,12 @@ from tensorflow.keras.layers import UpSampling2D, Conv2DTranspose
 from tensorflow.keras.layers import InputSpec, BatchNormalization
 from keras_contrib.normalization.instancenormalization import InstanceNormalization
 from tensorflow.keras.models import load_model
+from tensorflow.keras.callbacks import ModelCheckpoint
+import numpy as np
 
 from padding import ReflectionPadding2D
 from blocks import ResidualBlock, DownsamplingBlock, UpsamplingBlock
+from losses import TheLoser
 import pickle
 
 
@@ -90,6 +93,18 @@ class ImageTransformNetwork():
         out = _conv_out_c9s1f3(x)
 
         self.model = Model(inputs=inp, outputs=out)
+
+
+    def compile_model(self, loss_measurer: TheLoser):
+        loss_fn = loss_measurer.get_loss_function(base_img, style_img)
+        optimizer = Adam(lr=0.001)
+        self.model.compile(loss=loss_fn, optimizer=optimizer)
+
+
+    def train_model(self, base_img: np.ndarray, style_img: np.ndarray, model_checkpoint_prefix: str):
+        model_chkp = ModelCheckpoint(filepath=model_checkpoint_prefix + '.h5')
+        callbacks = [model_chkp]
+        self.model.fit(x=base_img, y=base_img, batch_size=4, epochs=n_epochs, callbacks=callbacks)
 
 
     # Some util functions    
