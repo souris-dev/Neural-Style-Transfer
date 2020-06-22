@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Conv2D, Activation, Add, Input
 from tensorflow.keras.layers import UpSampling2D, Conv2DTranspose
 from tensorflow.keras.layers import InputSpec, BatchNormalization
 from keras_contrib.normalization.instancenormalization import InstanceNormalization
+from tensorflow.keras.models import load_model
 
 from padding import ReflectionPadding2D
 from blocks import ResidualBlock, DownsamplingBlock, UpsamplingBlock
@@ -25,6 +26,26 @@ class ImageTransformNetwork():
     def __init__(self):
         # TODO: Complete the initialization
         self._build_network()
+
+
+    @classmethod
+    def from_keras_saved(classname, path, weights_path=False):
+        """
+        Factory function to create an ImageTransformNetwork
+        from a saved file.
+        """
+        img_tr_net = classname()
+        img_tr_net.model = load_model(path)
+        return img_tr_net
+
+
+    @classmethod
+    def just_want_the_model(classname):
+        """
+        Gives only the model after creating an ImageTransformNetwork
+        """
+        img_tr_net = classname()
+        return img_tr_net.model
 
 
     def _residual_bock(self, input_layer, n_filters):
@@ -70,6 +91,16 @@ class ImageTransformNetwork():
 
         self.model = Model(inputs=inp, outputs=out)
 
-    
+
+    # Some util functions    
     def get_model(self):
         return self.model
+
+    def save_model(self, path):
+        self.model.save(path)
+
+    def save_model_weights(self, path):
+        self.model.save_weights(path)
+
+    def load_model(self, path):
+        self.model = load_model(path)
