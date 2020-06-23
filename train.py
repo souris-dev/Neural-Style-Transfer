@@ -87,7 +87,7 @@ dataset_directory = extract_mscoco(fname)
 # Prepare the data generator
 data_generator = ImageDataGenerator(preprocessing_function=vgg16.preprocess_input)
 BATCH_SIZE = 4
-data_flow = data_generator.flow_from_directory(directory=train_directory,
+data_flow = data_generator.flow_from_directory(directory=dataset_directory,
     batch_size=BATCH_SIZE,
     class_mode='input',
     target_size=(256, 256)
