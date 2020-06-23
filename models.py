@@ -68,7 +68,7 @@ class ImageTransformNetwork():
 
     # For the input:
     def _conv_inp_c9s1f32(self, input_tensor):
-        x = ReflectionPadding2D(input_tensor)
+        x = ReflectionPadding2D()(input_tensor)
         x = Conv2D(filters=32, strides=1, kernel_size=(9, 9), padding='valid')(x)
         return x
 
