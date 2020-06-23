@@ -29,7 +29,7 @@ class LossGenerator:
         # Here are the models and layers we'll use
         # for our perceptual loss(es)
         self.loss_model_vgg16 = vgg16.VGG16(include_top=False, weights='imagenet')
-        self.layers_vgg16 = {layer.name: layer.output for layer in loss_model.layers}
+        self.layers_vgg16 = {layer.name: layer.output for layer in loss_model_vgg16.layers}
 
         self.style_layers = [
             'block1_conv2',
