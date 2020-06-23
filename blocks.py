@@ -83,7 +83,7 @@ class UpsamplingBlock(Layer):
 
         if norm == 'instancenorm':
             self.norm_1 = InstanceNormalization(axis=-1, center=False, scale=False)
-        elif norm == 'batchnorm'
+        elif norm == 'batchnorm':
             self.norm_1 = BatchNormalization()
 
         self.activ = Activation('relu')
