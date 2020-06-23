@@ -27,7 +27,7 @@ parser.add_argument('--epochs', type=int, default=2, required=False,
                     help='Number of epochs to run.')
 parser.add_argument('--content_weight', type=float, default=1.0, required=False,
                     help='Content weight.')
-parser.add_argument('--style_weight', type=float, default=1.0, required=False,
+parser.add_argument('--style_weight', type=float, default=5.0, required=False,
                     help='Style weight.')
 parser.add_argument('--tv_weight', type=float, default=1e-6, required=False,
                     help='Total Variation weight.')
