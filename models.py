@@ -8,6 +8,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D, Activation, Add, Input
 from tensorflow.keras.layers import UpSampling2D, Conv2DTranspose
 from tensorflow.keras.layers import InputSpec, BatchNormalization
+
 from keras_contrib.layers.normalization.instancenormalization import InstanceNormalization
 from tensorflow.keras.models import load_model
 from tensorflow.keras.callbacks import ModelCheckpoint
