@@ -92,7 +92,7 @@ class ImageTransformNetwork():
         # Get the output
         x = UpsamplingBlock(filters=64)(x)
         x = UpsamplingBlock(filters=32)(x)
-        out = _conv_out_c9s1f3(x)
+        out = self._conv_out_c9s1f3(x)
 
         self.model = Model(inputs=inp, outputs=out)
 
