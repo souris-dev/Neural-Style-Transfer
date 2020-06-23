@@ -1,6 +1,6 @@
 # Reflection padding
 import tensorflow as tf
-from tensorflow.keras.layers import Layer
+from tensorflow.keras.layers import Layer, InputSpec
 
 class ReflectionPadding2D(Layer):
     def __init__(self, padding=(1, 1), **kwargs):
