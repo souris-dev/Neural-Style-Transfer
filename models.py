@@ -12,6 +12,7 @@ from tensorflow.keras.layers import InputSpec, BatchNormalization
 from tensorflow_addons.layers.normalizations import InstanceNormalization
 from tensorflow.keras.models import load_model
 from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.optimizers import Adam
 import numpy as np
 
 from padding import ReflectionPadding2D
