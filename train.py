@@ -32,6 +32,7 @@ parser.add_argument('--style_weight', type=float, default=5.0, required=False,
 parser.add_argument('--tv_weight', type=float, default=1e-6, required=False,
                     help='Total Variation weight.')
 parser.add_argument('--download_folder', type=str, required=True, help='Download folder for dataset')
+parser.add_argument('--extracted_folder', default='', type=str, required=False, help='If dataset files are already extracted, specify directory')
 parser.add_argument('--pixel_weight', type=float, default=0.0, required=False,
                     help='Pixel loss weight')
 
@@ -82,7 +83,7 @@ PIXEL_WT = args_in.pixel_weight
 
 # Let's download and prepare the data
 fname = download_mscoco(download_folder=args_in.download_folder)
-dataset_directory = extract_mscoco(fname)
+dataset_directory = extract_mscoco(fname) if args_in.extracted_folder == '' else args_in.extracted_folder
 
 # Prepare the data generator
 data_generator = ImageDataGenerator(preprocessing_function=vgg16.preprocess_input)
