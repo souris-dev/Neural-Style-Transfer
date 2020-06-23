@@ -129,7 +129,7 @@ class LossGenerator:
         # Then we won't have to do 3 separate passes
         # Recall the 0th dimension of this input_tensor is the batch dimension
         
-        input_tensor = tf.concat([base, style, combo], axis=0)
+        input_tensor = tf.concat([base, styleref, combo], axis=0)
         # get the outputs of the vgg16
         outs = self.loss_model(input_tensor)
 
