@@ -3,7 +3,7 @@
 
 # This file defines the Image Transformation Network
 
-from tensorflow as tf
+import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D, Activation, Add, Input
 from tensorflow.keras.layers import UpSampling2D, Conv2DTranspose

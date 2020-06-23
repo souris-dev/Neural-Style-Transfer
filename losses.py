@@ -42,8 +42,7 @@ class LossGenerator:
         self.loss_model = Model(inputs=loss_model_vgg16.inputs, outputs=layers_vgg16)
 
 
-    @staticmethod
-    def _gram_matrix(x):
+    def _gram_matrix(self, x):
         """
         Calculation of Gram matrix.
         Static because it doesn't need to know the size of the output image.
@@ -66,22 +65,24 @@ class LossGenerator:
 
         # Calculate the gram matrix: G = matmul(x, x')
         gram = tf.matmul(feature_vector, tf.transpose(feature_vector))
-        return gram
+
+        # Return the normalizaed version of it
+        channels = 3
+        return (gram / (channels * self.img_h * self.img_w))
 
 
     def _style_loss(self, base, combo) -> float:
         """
         Calculates the style loss between two images using Gram matrix.
         """
-        Gram_base = gram_matrix(base)
-        Gram_combo = gram_matrix(combo)
+        Gram_base = self._gram_matrix(base)
+        Gram_combo = self._gram_matrix(combo)
         channels = 3
         size = img_h * img_w
 
         # Find the square of the Frobenius norm
-        # of G(combo) - G(base)
-        # And normalize it
-        return tf.reduce_sum(tf.square(Gram_base - Gram_combo) / (4 * (channels ** 2) * (size ** 2)))
+        # of the normalized gram matrices G(combo) - G(base)
+        return tf.reduce_sum(tf.square(Gram_base - Gram_combo))
 
 
     def _feature_recons_loss(self, base, combo) -> float:
@@ -89,7 +90,9 @@ class LossGenerator:
         Calculates the feature loss between the combined and base image.
         Can be made static, but didn't do so for the sake of uniformity.
         """
-        return tf.reduce_sum(tf.square(combo - base))
+        # Normalize this too
+        channels = 3
+        return tf.reduce_sum(tf.square(combo - base)) / (channels * self.img_h * self.img_w)
 
 
     def _tv_loss(self, x) -> float:

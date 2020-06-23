@@ -25,11 +25,11 @@ parser.add_argument('model_checkpoint_prefix', type=str, default='./checkpoints/
                     help='Prefix for saving the model checkpoints')
 parser.add_argument('--epochs', type=int, default=2, required=False,
                     help='Number of epochs to run.')
-parser.add_argument('--content_weight', type=float, default=0.025, required=False,
+parser.add_argument('--content_weight', type=float, default=1.0, required=False,
                     help='Content weight.')
 parser.add_argument('--style_weight', type=float, default=1.0, required=False,
                     help='Style weight.')
-parser.add_argument('--tv_weight', type=float, default=1.0, required=False,
+parser.add_argument('--tv_weight', type=float, default=1e-6, required=False,
                     help='Total Variation weight.')
 parser.add_argument('--download_folder', type=str, required=True, help='Download folder for dataset')
 parser.add_argument('--pixel_weight', type=float, default=0.0, required=False,
@@ -43,7 +43,7 @@ MODEL_SAVE_PREFIX = args_in.model_checkpoint_prefix
 # Image Utilities
 ######################
 
-width, height = load_img(BASE_IMG_PATH).size
+# width, height = load_img(BASE_IMG_PATH).size
 # Output image dimensions:
 IMG_H = 256
 IMG_W = 256
