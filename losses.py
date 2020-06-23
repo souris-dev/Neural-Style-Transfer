@@ -29,7 +29,7 @@ class LossGenerator:
         # Here are the models and layers we'll use
         # for our perceptual loss(es)
         self.loss_model_vgg16 = vgg16.VGG16(include_top=False, weights='imagenet')
-        self.layers_vgg16 = {layer.name: layer.output for layer in loss_model_vgg16.layers}
+        self.layers_vgg16 = {layer.name: layer.output for layer in self.loss_model_vgg16.layers}
 
         self.style_layers = [
             'block1_conv2',
@@ -131,7 +131,7 @@ class LossGenerator:
         
         input_tensor = tf.concat([base, style, combo], axis=0)
         # get the outputs of the vgg16
-        outs = loss_model(input_tensor)
+        outs = self.loss_model(input_tensor)
 
         # init loss
         loss = tf.zeros(shape=())
