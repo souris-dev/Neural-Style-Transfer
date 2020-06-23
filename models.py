@@ -3,6 +3,7 @@
 
 # This file defines the Image Transformation Network
 
+from tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D, Activation, Add, Input
 from tensorflow.keras.layers import UpSampling2D, Conv2DTranspose
@@ -14,7 +15,7 @@ import numpy as np
 
 from padding import ReflectionPadding2D
 from blocks import ResidualBlock, DownsamplingBlock, UpsamplingBlock
-from losses import TheLoser
+from losses import LossGenerator
 import pickle
 
 
@@ -26,8 +27,8 @@ class ImageTransformNetwork():
     (as suggested in the paper)
     """
 
-    def __init__(self):
-        # TODO: Complete the initialization
+    def __init__(self, style_img: np.ndarray):
+        self.styleref = style_img
         self._build_network()
 
 
@@ -77,7 +78,7 @@ class ImageTransformNetwork():
 
 
     def _build_network(self, n_residual_blocks=5):
-        inp = Input(shape=(None, None, None, 3), name='input_layer')
+        inp = Input(shape=(None, None, 3), name='input_layer')
         x = self._conv_inp_c9s1f32(inp)
         # Downsample:
         x = DownsamplingBlock(filters=64)(x)
@@ -95,17 +96,16 @@ class ImageTransformNetwork():
         self.model = Model(inputs=inp, outputs=out)
 
 
-    def compile_model(self, loss_measurer: TheLoser):
-        loss_fn = loss_measurer.get_loss_function(base_img, style_img)
+    def compile_model(self, base_img, style_img, loss_measurer: LossGenerator):
+        loss_fn = loss_measurer.get_loss_function(self.styleref)
         optimizer = Adam(lr=0.001)
         self.model.compile(loss=loss_fn, optimizer=optimizer)
 
 
-    def train_model(self, base_img: np.ndarray, style_img: np.ndarray, model_checkpoint_prefix: str):
+    def train_model(self, generator, epochs, model_checkpoint_prefix: str):
         model_chkp = ModelCheckpoint(filepath=model_checkpoint_prefix + '.h5')
         callbacks = [model_chkp]
-        self.model.fit(x=base_img, y=base_img, batch_size=4, epochs=n_epochs, callbacks=callbacks)
-
+        self.model.fit(generator, epochs=epochs, callbacks=callbacks)
 
     # Some util functions    
     def get_model(self):
@@ -119,3 +119,33 @@ class ImageTransformNetwork():
 
     def load_model(self, path):
         self.model = load_model(path)
+
+    
+    # To save the model as .pb for use in OpenCV
+    def save_model_pb(self, path):
+        # Convert Keras model to ConcreteFunction
+        full_model = tf.function(lambda x: model(x))
+        full_model = full_model.get_concrete_function(
+            tf.TensorSpec(model.inputs[0].shape, model.inputs[0].dtype))
+
+        # Get frozen ConcreteFunction
+        frozen_func = convert_variables_to_constants_v2(full_model)
+        frozen_func.graph.as_graph_def()
+
+        layers = [op.name for op in frozen_func.graph.get_operations()]
+        print("-" * 50)
+        print("Frozen model layers: ")
+        for layer in layers:
+            print(layer)
+
+        print("-" * 50)
+        print("Frozen model inputs: ")
+        print(frozen_func.inputs)
+        print("Frozen model outputs: ")
+        print(frozen_func.outputs)
+
+        # Save frozen graph from frozen ConcreteFunction to hard drive
+        tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
+                        logdir="./frozen_models",
+                        name=path,
+                        as_text=False)

@@ -8,9 +8,9 @@ from tensorflow.keras.models import Model
 
 from functools import partial
 
-# This class has all losses we'll use, so it's TheLoser
+# This class has all losses we'll use, so it's LossGenerator
 # Don't get me wrong, it's still a star of the show ;-)
-class TheLoser:
+class LossGenerator:
     """
     This class groups all the loss methods together
     So that one single Loser object can be created for a given image size
@@ -43,7 +43,7 @@ class TheLoser:
 
 
     @staticmethod
-    def _gram_matrix(x: tf.Tensor) -> tf.Tensor:
+    def _gram_matrix(x):
         """
         Calculation of Gram matrix.
         Static because it doesn't need to know the size of the output image.
@@ -69,7 +69,7 @@ class TheLoser:
         return gram
 
 
-    def _style_loss(self, base: tf.Tensor, combo: tf.Tensor) -> float:
+    def _style_loss(self, base, combo) -> float:
         """
         Calculates the style loss between two images using Gram matrix.
         """
@@ -84,7 +84,7 @@ class TheLoser:
         return tf.reduce_sum(tf.square(Gram_base - Gram_combo) / (4 * (channels ** 2) * (size ** 2)))
 
 
-    def _feature_recons_loss(self, base: tf.Tensor, combo: tf.Tensor) -> float:
+    def _feature_recons_loss(self, base, combo) -> float:
         """
         Calculates the feature loss between the combined and base image.
         Can be made static, but didn't do so for the sake of uniformity.
@@ -92,7 +92,7 @@ class TheLoser:
         return tf.reduce_sum(tf.square(combo - base))
 
 
-    def _tv_loss(self, x: tf.Tensor) -> float:
+    def _tv_loss(self, x) -> float:
         """
         Calculates total variation loss of tensor x.
         Obtained by shifting the image pixels by 1 pixel down
@@ -121,7 +121,7 @@ class TheLoser:
         return tf.reduce_sum(tf.square(y_true - y_pred) / (c * h * w))
 
 
-    def compute_loss_3args(self, base: tf.Tensor, styleref: tf.Tensor, combo: tf.Tensor):
+    def compute_loss_3args(self, base, combo, styleref):
         # Send these 3 images together as a batch
         # Then we won't have to do 3 separate passes
         # Recall the 0th dimension of this input_tensor is the batch dimension
@@ -159,7 +159,7 @@ class TheLoser:
         return loss
 
 
-    def get_loss_function(self, base: tf.Tensor, styleref: tf.Tensor) -> function:
+    def get_loss_function(self, styleref):
         """
         Returns a (partial) function that accepts 2 arguments,
         as keras expects a loss function that takes 2 arguments while training.
