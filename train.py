@@ -9,7 +9,10 @@ from tensorflow.keras.applications import vgg16
 
 from models import ImageTransformNetwork
 from losses import TheLoser
+from traindata_prep import *
 import argparse
+import os
+import requests
 
 ####################
 # Argument Parsing
@@ -46,9 +49,9 @@ def preprocess_img(img_path: str) -> tf.Tensor:
     img_arr = img_to_array(img)
     img_arr = np.expand_dims(img_arr, axis=0)  # make the image one batch
     print('After expand_dims')
-    # vgg19 performs mean subtraction on the pixels for normalization
+    # vgg16 performs mean subtraction on the pixels
     # (as a preprocessing step)
-    img_arr = vgg19.preprocess_input(img_arr)
+    img_arr = vgg16.preprocess_input(img_arr)
     return tf.convert_to_tensor(img_arr)
 
 
@@ -57,7 +60,7 @@ def deprocess_img(img_tensor: tf.Tensor) -> np.ndarray:
     img_arr = img_arr.reshape((IMG_H, IMG_W, 3))
     
     # These are the mean pixel values for the ImageNet dataset
-    # The VGG19 preprocessing subtracted these values, so we now add them
+    # The VGG16 preprocessing subtracted these values, so we now add them
     img_arr[:,:, 0] += 103.939
     img_arr[:,:, 1] += 116.770
     img_arr[:,:, 2] += 123.68
@@ -77,6 +80,9 @@ PIXEL_WT = args_in.pixel_weight
 image_transform_net = ImageTransformNetwork()
 image_transform_model = image_transform_net.model
 
+fname = download_mscoco()
+extract_mscoco(fname)
+
 # We'll be training on the MS-COCO dataset
 
 #base_img = preprocess_img(BASE_IMG_PATH)
@@ -85,3 +91,4 @@ image_transform_model = image_transform_net.model
 #loss_measures = TheLoser(imshape=(IMG_H, IMG_W), STYLE_WT, FEATURE_RECONS_WT, TV_WT, PIXEL_WT)
 #image_transform_net.compile_model(loss_measures)
 #image_transform_net.train_model(base_img, style_img, loss_measures, MODEL_SAVE_PREFIX)
+
