@@ -16,8 +16,8 @@ def download_mscoco(download_folder: str) -> str:
     # If running on linux, use wget
     if platform.startswith('linux'):
         print('Downloading training data (MS-COCO dataset) using wget...')
-        print("Executing: " + "wget " + url + " -O " + os.path.join(download_folder, 'train_coco.zip'))
-        if (os.system("wget " + url + " -O " + os.path.join(download_folder, 'train_coco.zip')) != 0):
+        print("Executing: " + "wget " + url + " -O '" + os.path.join(download_folder, 'train_coco.zip') + "'")
+        if (os.system("wget " + url + " -O '" + os.path.join(download_folder, 'train_coco.zip') + "'") != 0):
             print('Training data download failed! Exiting...')
             exit()
 
