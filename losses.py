@@ -39,7 +39,7 @@ class LossGenerator:
         ]
 
         self.feature_recons_layer = 'block3_conv3'
-        self.loss_model = Model(inputs=loss_model_vgg16.inputs, outputs=layers_vgg16)
+        self.loss_model = Model(inputs=self.loss_model_vgg16.inputs, outputs=self.layers_vgg16)
 
 
     def _gram_matrix(self, x):
