@@ -97,7 +97,7 @@ class ImageTransformNetwork():
         self.model = Model(inputs=inp, outputs=out)
 
 
-    def compile_model(self, base_img, style_img, loss_measurer: LossGenerator):
+    def compile_model(self, loss_measurer: LossGenerator):
         loss_fn = loss_measurer.get_loss_function(self.styleref)
         optimizer = Adam(lr=0.001)
         self.model.compile(loss=loss_fn, optimizer=optimizer)
