@@ -42,7 +42,7 @@ class ResidualBlock(Layer):
 
 # Downsampling blocks
 class DownsamplingBlock(Layer):
-    def __init__(self, filters, norm='instancenorm' **kwargs):
+    def __init__(self, filters, norm='instancenorm', **kwargs):
         self.n_filters = filters
         self.input_spec = [InputSpec(ndim=4)]
         super(DownsamplingBlock, self).__init__(**kwargs)
