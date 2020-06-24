@@ -128,7 +128,7 @@ class LossGenerator:
         # Send these 3 images together as a batch
         # Then we won't have to do 3 separate passes
         # Recall the 0th dimension of this input_tensor is the batch dimension
-        print(base.shape, stylref.shape, combo.shape)
+        print(base.shape, styleref.shape, combo.shape)
         print(type(base), type(styleref), type(combo))
         # Recall that currently, combo and base are actually unprocessed for VGG input
         # Also, combo and base are in the range [0, 1], but vgg16 expects them as [0, 255]
