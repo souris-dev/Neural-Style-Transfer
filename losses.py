@@ -77,8 +77,6 @@ class LossGenerator:
         """
         Gram_base = self._gram_matrix(base)
         Gram_combo = self._gram_matrix(combo)
-        channels = 3
-        size = img_h * img_w
 
         # Find the square of the Frobenius norm
         # of the normalized gram matrices G(combo) - G(base)
