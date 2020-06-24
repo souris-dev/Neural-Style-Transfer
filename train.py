@@ -52,7 +52,7 @@ IMG_W = 256
 def preprocess_style_img(img_path: str) -> np.ndarray:
     img = load_img(img_path, target_size=(IMG_H, IMG_W))
     img_arr = img_to_array(img)
-    #img_arr = np.expand_dims(img_arr, axis=0)  # make the image one batch
+    img_arr = np.expand_dims(img_arr, axis=0)  # make the image one batch
     # vgg16 performs mean subtraction on the pixels
     # (as a preprocessing step)
     img_arr = vgg16.preprocess_input(img_arr)
@@ -86,7 +86,7 @@ fname = download_mscoco(download_folder=args_in.download_folder)
 dataset_directory = extract_mscoco(fname) if args_in.extracted_folder == '' else args_in.extracted_folder
 
 # Prepare the data generator
-data_generator = ImageDataGenerator(preprocessing_function=vgg16.preprocess_input)
+data_generator = ImageDataGenerator(rescale=1/255., preprocessing_function=vgg16.preprocess_input)
 BATCH_SIZE = 4
 data_flow = data_generator.flow_from_directory(directory=dataset_directory,
     batch_size=BATCH_SIZE,

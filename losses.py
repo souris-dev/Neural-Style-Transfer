@@ -128,6 +128,14 @@ class LossGenerator:
         # Send these 3 images together as a batch
         # Then we won't have to do 3 separate passes
         # Recall the 0th dimension of this input_tensor is the batch dimension
+        print(base.shape, stylref.shape, combo.shape)
+        print(type(base), type(styleref), type(combo))
+        # Recall that currently, combo and base are actually unprocessed for VGG input
+        # Also, combo and base are in the range [0, 1], but vgg16 expects them as [0, 255]
+        base = base * 255
+        combo = combo * 255
+        base = vgg16.preprocess_input(base)
+        combo = vgg16.preprocess_input(combo)
         
         input_tensor = tf.concat([base, styleref, combo], axis=0)
         # get the outputs of the vgg16
