@@ -20,6 +20,9 @@ from blocks import ResidualBlock, DownsamplingBlock, UpsamplingBlock
 from losses import LossGenerator
 import pickle
 
+# Used for saving in Protocol Buffers format
+from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
+from tensorflow.lite.python.util import run_graph_optimizations, get_grappler_config
 
 # The Image Transformation Network
 class ImageTransformNetwork():
@@ -126,30 +129,22 @@ class ImageTransformNetwork():
 
     
     # To save the model as .pb for use in OpenCV
-    def save_model_pb(self, path):
-        # Convert Keras model to ConcreteFunction
-        full_model = tf.function(lambda x: model(x))
-        full_model = full_model.get_concrete_function(
-            tf.TensorSpec(model.inputs[0].shape, model.inputs[0].dtype))
+    def save_frozen_graph(self, path):
+        real_model_function = tf.function(self.model)
+        real_model = real_model_function.get_concrete_function(
+            tf.TensorSpec(model.inputs[0].shape, model.inputs[0].dtype)
+        )
+        frozen_func, graph_def = convert_variables_to_constants_v2_as_graph(real_model)
 
-        # Get frozen ConcreteFunction
-        frozen_func = convert_variables_to_constants_v2(full_model)
-        frozen_func.graph.as_graph_def()
+        input_tensors = [tensor for tensor in frozen_func.inputs if tensor.dtype != tf.resource]
+        output_tensors = frozen_func.outputs
 
-        layers = [op.name for op in frozen_func.graph.get_operations()]
-        print("-" * 50)
-        print("Frozen model layers: ")
-        for layer in layers:
-            print(layer)
+        graph_def = run_graph_optimizations(
+            graph_def,
+            input_tensors,
+            output_tensors,
+            config=get_grappler_config(["constfold", "function"]),
+            graph=frozen_func.graph
+        )
 
-        print("-" * 50)
-        print("Frozen model inputs: ")
-        print(frozen_func.inputs)
-        print("Frozen model outputs: ")
-        print(frozen_func.outputs)
-
-        # Save frozen graph from frozen ConcreteFunction to hard drive
-        tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
-                        logdir="./frozen_models",
-                        name=path,
-                        as_text=False)
+        tf.io.write_graph(graph_def, './frozen_graph', path)

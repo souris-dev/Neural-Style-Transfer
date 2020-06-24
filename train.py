@@ -116,4 +116,4 @@ image_transform_net.save_model_weights('model_weights.h5')
 
 # Also save in the Protocol Buffers format
 print('Saving model also as: model.pb')
-image_transform_net.save_model_pb('model_frozen_graph.pb')
+image_transform_net.save_frozen_graph('model_frozen_graph.pb')
