@@ -80,7 +80,7 @@ class ImageTransformNetwork():
 
 
     def _build_network(self, n_residual_blocks=5):
-        inp = Input(shape=(None, None, 3), name='input_layer')
+        inp = Input(shape=(256, 256, 3), name='input_layer')
         x = self._conv_inp_c9s1f32(inp)
         # Downsample:
         x = DownsamplingBlock(filters=64)(x)
