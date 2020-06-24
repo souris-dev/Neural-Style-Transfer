@@ -39,7 +39,8 @@ class ResidualBlock(Layer):
 
         return out
 
-     # To make the block (layer) serializable
+
+    # To make the block (layer) serializable
     def get_config(self):
         config = super(ResidualBlock, self).get_config()
         config.update({"filters": self.filters, "norm_type": self.norm_type})
@@ -67,6 +68,7 @@ class DownsamplingBlock(Layer):
         layer = self.acti(layer)
 
         return layer
+
 
     # To make the block (layer) serializable
     def get_config(self):
@@ -113,6 +115,7 @@ class UpsamplingBlock(Layer):
         layer = self.activ(layer)
 
         return layer
+
 
     # To make the block (layer) serializable
     def get_config(self):
