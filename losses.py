@@ -159,7 +159,7 @@ class LossGenerator:
             combo_style_content = outs_style_feat[2,:,:,:]
             style_loss = self._style_loss(styleref_style_content, combo_style_content)
             n_sty_layers = len(self.style_layers)
-            loss += self.style_weight * (style_loss / n_sty_layers)
+            loss += self.style_wt * (style_loss / n_sty_layers)
 
         # Finally add the total variation loss and the pixel loss into the mix:
         loss += self.tv_wt * _tv_loss(combo)
