@@ -102,11 +102,11 @@ class LossGenerator:
         # The tensor should be having rank of 4 here
         # 1 pixel shift down loss:
         a = tf.square(
-            x[:, :self.img_h-1, :img_w-1, :] - x[:, 1:, :self.img_w-1, :]
+            x[:, :self.img_h-1, :self.img_w-1, :] - x[:, 1:, :self.img_w-1, :]
         )
         # 1 pixel shift right loss:
         b = tf.square(
-            x[:, :self.img_h-1, :img_w-1, :] - x[:, :self.img_h-1, 1:, :]
+            x[:, :self.img_h-1, :self.img_w-1, :] - x[:, :self.img_h-1, 1:, :]
         )
         # combine a and b
         return tf.reduce_sum(tf.pow(a + b, 1.25))
