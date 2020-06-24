@@ -16,6 +16,7 @@ class ReflectionPadding2D(Layer):
         w_pad,h_pad = self.padding
         return tf.pad(x, [[0, 0], [h_pad, h_pad], [w_pad, w_pad], [0, 0]], 'REFLECT')
 
+
     # To make the layer serializable
     def get_config(self):
         config = super(ReflectionPadding2D, self).get_config()
