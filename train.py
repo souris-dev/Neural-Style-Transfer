@@ -35,6 +35,7 @@ parser.add_argument('--download_folder', type=str, required=True, help='Download
 parser.add_argument('--extracted_folder', default='', type=str, required=False, help='If dataset files are already extracted, specify directory')
 parser.add_argument('--pixel_weight', type=float, default=0.0, required=False,
                     help='Pixel loss weight')
+parser.add_argument('--model_save_dir', type=str, required=False, default=os.getcwd(), help='Directory to save the model')
 
 args_in = parser.parse_args()
 STYLE_IMG_PATH = args_in.style_image
@@ -108,12 +109,13 @@ image_transform_net.compile_model(loss_gen)
 image_transform_net.train_model(data_flow, epochs=args_in.epochs, model_checkpoint_prefix=MODEL_SAVE_PREFIX)
 
 print('Training finished!')
-print('Saving model to: model.h5')
-print('Saving model_weights to: model_weights.h5')
+print('Saving model to: ' + os.path.join(save_dir, 'model.h5'))
+print('Saving model_weights to: ' + os.path.join(save_dir, 'model_weights.h5'))
 
-image_transform_net.save_model('model.h5')
-image_transform_net.save_model_weights('model_weights.h5')
+save_dir = args_in.model_save_dir
+image_transform_net.save_model(os.path.join(save_dir, 'model.h5'))
+image_transform_net.save_model_weights(os.path.join(save_dir, 'model_weights.h5'))
 
 # Also save in the Protocol Buffers format
-print('Saving model also as: model.pb')
-image_transform_net.save_frozen_graph('model_frozen_graph.pb')
+print('Saving frozen graph as: ' + os.path.join(save_dir, 'model_frozen_graph.pb'))
+image_transform_net.save_frozen_graph(os.path.join(save_dir, 'model_frozen_graph.pb'))
