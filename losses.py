@@ -162,8 +162,8 @@ class LossGenerator:
             loss += self.style_wt * (style_loss / n_sty_layers)
 
         # Finally add the total variation loss and the pixel loss into the mix:
-        loss += self.tv_wt * _tv_loss(combo)
-        loss += self.pixel_wt * _pixel_loss(combo, base)
+        loss += self.tv_wt * self._tv_loss(combo)
+        loss += self.pixel_wt * self._pixel_loss(combo, base)
 
         return loss
 
