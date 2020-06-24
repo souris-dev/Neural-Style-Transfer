@@ -156,7 +156,7 @@ class LossGenerator:
             # This is similar to calculating content loss
             # But we need this averaged over a number of layers
 
-            outs_style_feat = outs[self.style_layer]
+            outs_style_feat = outs[style_layer]
             styleref_style_content = outs_style_feat[1,:,:,:]
             combo_style_content = outs_style_feat[2,:,:,:]
             style_loss = self._style_loss(styleref_style_content, combo_style_content)
