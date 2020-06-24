@@ -112,7 +112,7 @@ class LossGenerator:
         return tf.reduce_sum(tf.pow(a + b, 1.25))
 
 
-    def _pixel_loss(y_pred, y_true) -> float:
+    def _pixel_loss(self, y_pred, y_true) -> float:
         """
         Calculates simple pixel-wise loss.
         """
