@@ -10,11 +10,11 @@ from tensorflow_addons.layers.normalizations import InstanceNormalization
 # Residual blocks
 class ResidualBlock(Layer):
     def __init__(self, filters, norm='instancenorm', **kwargs):
-        self.n_filters = filters
+        self.filters = filters
         self.input_spec = [InputSpec(ndim=4)]
         super(ResidualBlock, self).__init__(**kwargs)
 
-        self.conv_1 = Conv2D(filters=self.n_filters, kernel_size=(3, 3), strides=1, padding='same')
+        self.conv_1 = Conv2D(filters=self.filters, kernel_size=(3, 3), strides=1, padding='same')
 
         if norm == 'instancenorm':
             self.norm_1 = InstanceNormalization(axis=-1, center=False, scale=False)
@@ -24,7 +24,7 @@ class ResidualBlock(Layer):
             self.norm_2 = BatchNormalization()
         
         self.acti_1 = Activation('relu')
-        self.conv_2 = Conv2D(filters=self.n_filters, kernel_size=(3, 3), strides=1, padding='same')
+        self.conv_2 = Conv2D(filters=self.filters, kernel_size=(3, 3), strides=1, padding='same')
         self.adder = Add()
 
     def call(self, inputs):
@@ -39,15 +39,22 @@ class ResidualBlock(Layer):
 
         return out
 
+     # To make the block (layer) serializable
+    def get_config(self):
+        config = super(ResidualBlock, self).get_config()
+        config.update({"filters": self.filters, "norm_type": self.norm_type})
+        return config
+
 
 # Downsampling blocks
 class DownsamplingBlock(Layer):
     def __init__(self, filters, norm='instancenorm', **kwargs):
-        self.n_filters = filters
+        self.filters = filters
+        self.norm_type = norm
         self.input_spec = [InputSpec(ndim=4)]
         super(DownsamplingBlock, self).__init__(**kwargs)
 
-        self.conv_1 = Conv2D(filters=self.n_filters, kernel_size=(3, 3), strides=2, padding='same')
+        self.conv_1 = Conv2D(filters=self.filters, kernel_size=(3, 3), strides=2, padding='same')
         if norm == 'instancenorm':
             self.norm_layer = InstanceNormalization(axis=-1, center=False, scale=False)
         elif norm == 'batchnorm':
@@ -61,6 +68,12 @@ class DownsamplingBlock(Layer):
 
         return layer
 
+    # To make the block (layer) serializable
+    def get_config(self):
+        config = super(DownsamplingBlock, self).get_config()
+        config.update({"filters": self.filters, "norm_type": self.norm_type})
+        return config
+
 
 # Upsampling blocks
 class UpsamplingBlock(Layer):
@@ -70,26 +83,27 @@ class UpsamplingBlock(Layer):
         use UpSampling2D instead.
         This argument controls the layer used for upsampling.
         """
-        self.n_filters = filters
-        self.use_convtrans = use_conv_trans
+        self.filters = filters
+        self.use_conv_trans = use_conv_trans
+        self.norm_type = norm
         self.input_spec = [InputSpec(ndim=4)]
         super(UpsamplingBlock, self).__init__(**kwargs)
 
         if (use_conv_trans):
-            self.convtr_1 = Conv2DTranspose(filters=self.n_filters, kernel_size=(3, 3), strides=2, padding='same')
+            self.convtr_1 = Conv2DTranspose(filters=self.filters, kernel_size=(3, 3), strides=2, padding='same')
         else:
             self.upsampling_1 = UpSampling2D()
-            self.conv_1 = Conv2D(filters=self.n_filters, kernel_size=3, strides=1, padding='same')
+            self.conv_1 = Conv2D(filters=self.filters, kernel_size=3, strides=1, padding='same')
 
-        if norm == 'instancenorm':
+        if self.norm_type == 'instancenorm':
             self.norm_1 = InstanceNormalization(axis=-1, center=False, scale=False)
-        elif norm == 'batchnorm':
+        elif self.norm_type == 'batchnorm':
             self.norm_1 = BatchNormalization()
 
         self.activ = Activation('relu')
 
     def call(self, inputs):
-        if (self.use_convtrans):
+        if (self.use_conv_trans):
             layer = self.convtr_1(inputs)
         else:
             layer = self.upsampling_1(inputs)
@@ -99,3 +113,9 @@ class UpsamplingBlock(Layer):
         layer = self.activ(layer)
 
         return layer
+
+    # To make the block (layer) serializable
+    def get_config(self):
+        config = super(UpsamplingBlock, self).get_config()
+        config.update({"filters": self.filters, "norm_type": self.norm_type, "use_conv_trans": self.use_conv_trans})
+        return config
