@@ -149,7 +149,7 @@ class LossGenerator:
         outs_content_feat = outs[self.feature_recons_layer]
         base_content = outs_content_feat[0,:,:,:]
         combo_content = outs_content_feat[2,:,:,:]
-        loss += self.content_wt * self._feature_recons_loss(base_content, combo_content)
+        loss += self.feature_recons_wt * self._feature_recons_loss(base_content, combo_content)
 
         # Now add the style reconstruction losses
         for style_layer in range(self.style_layers):
