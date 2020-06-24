@@ -152,7 +152,7 @@ class LossGenerator:
         loss += self.feature_recons_wt * self._feature_recons_loss(base_content, combo_content)
 
         # Now add the style reconstruction losses
-        for style_layer in range(self.style_layers):
+        for style_layer in self.style_layers:
             # This is similar to calculating content loss
             # But we need this averaged over a number of layers
 
