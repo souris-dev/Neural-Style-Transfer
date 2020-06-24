@@ -132,7 +132,7 @@ class ImageTransformNetwork():
     def save_frozen_graph(self, path):
         real_model_function = tf.function(self.model)
         real_model = real_model_function.get_concrete_function(
-            tf.TensorSpec(model.inputs[0].shape, model.inputs[0].dtype)
+            tf.TensorSpec(self.model.inputs[0].shape, self.model.inputs[0].dtype)
         )
         frozen_func, graph_def = convert_variables_to_constants_v2_as_graph(real_model)
 
