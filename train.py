@@ -84,6 +84,7 @@ PIXEL_WT = args_in.pixel_weight
 
 # Let's download and prepare the data
 fname = download_mscoco(download_folder=args_in.download_folder)
+print('Extracting dataset MS-COCO...')
 dataset_directory = extract_mscoco(fname) if args_in.extracted_folder == '' else args_in.extracted_folder
 
 # Prepare the data generator
